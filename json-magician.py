@@ -1,7 +1,8 @@
 import json
 import os
 import csv
-path="C:/Users/feseijo/Desktop/MITRE" #cambiar el path por el de una carpeta que contenga todas subcarpetas con versiones
+path="C:/Users/feseijo/Desktop/MITRE" #cambiar el path por el de una carpeta que contenga todas subcarpetas con sus respectivas versiones
+#En el ejemplo de arriba, MITRE es la carpeta madre que debería tener subcarpetas del estilo cti-ATT-CK-v1.0, cti-ATT-CK-v2.0 y asi
 
 # Leemos el archivo JSON
 
