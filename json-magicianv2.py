@@ -1,9 +1,22 @@
 import json
 import os
 import csv
+
+tacticas={"initial-access":"TA0001","execution":"TA0002","persistence":"TA0003","privilege-escalation":"TA0004","defense-evasion":"TA0005","credential-access":"TA0006","discovery":"TA0007","lateral-movement":"TA0008","collection":"TA0009","exfiltration":"TA0010","command-and-control":"TA0011","impact":"TA0040","resource-development":"TA0042","reconnaissance":"TA0043"}
+
 path="C:/Users/feseijo/Desktop/MITRE" #cambiar el path por el de una carpeta que contenga todas subcarpetas con versiones
 
 # Leemos el archivo JSON
+
+def calcularTacticaId(unaTactica):
+    if unaTactica in tacticas:
+        codigo = tacticas[unaTactica]
+    else:
+        codigo = "Unknown"
+    return codigo
+    
+    
+
 
 def calcularTTPs(path_main):
     lista_ttps=[]
@@ -29,21 +42,33 @@ def calcularTTPs(path_main):
                     datos = json.load(file_current)
                     
                     #Extraemos los elementos que nos interesan
-                   
-                    tecnicaId = str(datos["objects"][0]['external_references'][0]['external_id'])
-                    tecnicaTit = str(datos['objects'][0]['name'])
+                    ttp_id = str(datos["objects"][0]['external_references'][0]['external_id'])
+                    nombre = str(datos['objects'][0]['name'])
+                    
+                    if "." in ttp_id:
+                        #es una subtecnica
+                        subtecnicaTit = nombre #ya que mitre no diferencia
+                        subtecnicaId= ttp_id
+                        tecnicaId= ttp_id.split(".")[0]
+                        tecnicaTit="" #TO DO
+
+                    else:
+                        #es una tecnica
+                        tecnicaTit=nombre
+                        tecnicaId= ttp_id
+                        subtecnicaId=""
+                        subtecnicaTit=""
                     
                     try:
                         tacticas = datos['objects'][0]['kill_chain_phases'] #lista de tacticas 
-                        
                         #por cada tactica de la lista
                         for unaTactica in tacticas:
                             tacticaDes = str(unaTactica["phase_name"])
-                            lista_ttps.append({'Version': file_name,'Tactica':tacticaDes, 'ID':tecnicaId, 'Tecnica': tecnicaTit})
+                            lista_ttps.append({'Version': version,'Tactica':tacticaDes, 'TacticaID':calcularTacticaId(tacticaDes), 'Tecnica':tecnicaTit, 'TecnicaID': tecnicaId, 'Subtecnica':subtecnicaTit, 'SubtecnicaID': subtecnicaId})
                     except:
                         revoked = datos['objects'][0]['revoked'] #control mitre
                         if revoked:
-                            lista_ttps.append({'Version': version,'Tactica':"404 not found", 'ID':tecnicaId, 'Tecnica': tecnicaTit})
+                            lista_ttps.append({'Version': version,'Tactica':"NOT FOUND", 'TacticaID': "NOT FOUND", 'Tecnica':tecnicaTit, 'TecnicaID': tecnicaId, 'Subtecnica':subtecnicaTit, 'SubtecnicaID': subtecnicaId})
 
                         
     return lista_ttps
@@ -57,9 +82,9 @@ with open('ttps.csv', mode='w', newline='') as file:
     writer = csv.writer(file)
 
     # Escribimos la primera fila del archivo CSV
-    writer.writerow(['Version', 'Tactica', 'ID', 'Tecnica'])
+    writer.writerow(['Version', 'Tactica', 'TacticaID', 'Tecnica','TecnicaID','Subtecnica','SubtecnicaID'])
 
     # Escribimos cada TTP en el archivo CSV
     for ttp in lista:
-        writer.writerow([ttp['Version'], ttp['Tactica'], ttp['ID'], ttp['Tecnica']])
+        writer.writerow([ttp['Version'], ttp['Tactica'], ttp['TacticaID'], ttp['Tecnica'], ttp['TecnicaID'], ttp['Subtecnica'], ttp['SubtecnicaID']])
 
