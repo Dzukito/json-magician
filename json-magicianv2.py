@@ -68,12 +68,13 @@ def calcularTTPs(path_main):
                     except:
                         revoked = datos['objects'][0]['revoked'] #control mitre
                         if revoked:
-                            lista_ttps.append({'Version': version,'Tactica':"NOT FOUND", 'TacticaID': "NOT FOUND", 'Tecnica':tecnicaTit, 'TecnicaID': tecnicaId, 'Subtecnica':subtecnicaTit, 'SubtecnicaID': subtecnicaId})
+                            lista_ttps.append({'Version': version,'Tactica':"N/A", 'TacticaID': "N/A", 'Tecnica':tecnicaTit, 'TecnicaID': tecnicaId, 'Subtecnica':subtecnicaTit, 'SubtecnicaID': subtecnicaId})
 
                         
     return lista_ttps
 
 lista=calcularTTPs(path)
+
 print(lista)
 
 
