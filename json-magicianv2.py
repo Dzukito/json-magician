@@ -4,7 +4,7 @@ import csv
 
 tacticas={"initial-access":"TA0001","execution":"TA0002","persistence":"TA0003","privilege-escalation":"TA0004","defense-evasion":"TA0005","credential-access":"TA0006","discovery":"TA0007","lateral-movement":"TA0008","collection":"TA0009","exfiltration":"TA0010","command-and-control":"TA0011","impact":"TA0040","resource-development":"TA0042","reconnaissance":"TA0043"}
 
-path="C:/Users/feseijo/Desktop/MITRE" #cambiar el path por el de una carpeta que contenga todas subcarpetas con versiones
+path="C:/Users/fedsola/Desktop/FEDSOLA/MITRE" #cambiar el path por el de una carpeta que contenga todas subcarpetas con versiones
 
 # Leemos el archivo JSON
 
@@ -64,11 +64,11 @@ def calcularTTPs(path_main):
                         #por cada tactica de la lista
                         for unaTactica in tacticas:
                             tacticaDes = str(unaTactica["phase_name"])
-                            lista_ttps.append({'Version': version,'Tactica':tacticaDes, 'TacticaID':calcularTacticaId(tacticaDes), 'Tecnica':tecnicaTit, 'TecnicaID': tecnicaId, 'Subtecnica':subtecnicaTit, 'SubtecnicaID': subtecnicaId})
+                            lista_ttps.append({'Version':version,'Tactica':tacticaDes,'TacticaID':calcularTacticaId(tacticaDes),'Tecnica':tecnicaTit,'TecnicaID':tecnicaId,'Subtecnica':subtecnicaTit,'SubtecnicaID':subtecnicaId})
                     except:
                         revoked = datos['objects'][0]['revoked'] #control mitre
                         if revoked:
-                            lista_ttps.append({'Version': version,'Tactica':"N/A", 'TacticaID': "N/A", 'Tecnica':tecnicaTit, 'TecnicaID': tecnicaId, 'Subtecnica':subtecnicaTit, 'SubtecnicaID': subtecnicaId})
+                            lista_ttps.append({'Version':version,'Tactica':"N/A",'TacticaID': "N/A",'Tecnica':tecnicaTit,'TecnicaID':tecnicaId,'Subtecnica':subtecnicaTit,'SubtecnicaID':subtecnicaId})
 
                         
     return lista_ttps
@@ -77,6 +77,15 @@ lista=calcularTTPs(path)
 
 print(lista)
 
+# Completamos los valores de "Tecnica" en la lista
+for elemento in lista:
+    tecnicaIdActual = elemento['TecnicaID']
+    tecnicaActual = elemento['Tecnica']
+    if tecnicaActual == "":
+        # Buscamos otros valores en la lista que tengan el mismo "TecnicaID"
+        for x in lista:
+            if x['TecnicaID'] == tecnicaIdActual and x['Tecnica']!= "":
+                elemento['Tecnica'] = x['Tecnica']
 
 # Abrimos un archivo CSV para escribir los datos
 with open('ttps.csv', mode='w', newline='') as file:
@@ -88,4 +97,3 @@ with open('ttps.csv', mode='w', newline='') as file:
     # Escribimos cada TTP en el archivo CSV
     for ttp in lista:
         writer.writerow([ttp['Version'], ttp['Tactica'], ttp['TacticaID'], ttp['Tecnica'], ttp['TecnicaID'], ttp['Subtecnica'], ttp['SubtecnicaID']])
-
